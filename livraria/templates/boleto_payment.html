@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:ital,wght@0,300;0,400;0,500;1,300;1,400;1,500&family=Libre+Barcode+128&family=Libre+Barcode+128+Text&family=Libre+Barcode+39+Extended+Text&display=swap" rel="stylesheet">
+
+<div class="col-md-12 offset-md-3 mx-auto text-center "  >
+    <h2 class="text-center" >Forma de Pagamento - Boleto</h2>
+    <hr>
+    <div class="col-md-6 offset-md-3 mx-auto ">
+        {% comment %} <img src="{% static '/images/barcode.webp' %}" class=" mx-auto mt-5"> {% endcomment %}
+
+        {% comment %} "Libre Barcode 128" {% endcomment %}
+        <div style='font-family: "Libre Barcode 128", system-ui;
+                    font-weight: 100;
+                    font-style: normal;
+                    font-size:150px;'>{{ order_number }}</div>
+        {% comment %} <img src="{% url 'generate_barcode' order_number %}" class=" mx-auto mt-5" alt="Código de Barras"> {% endcomment %}
+
+        <p>Número do Pedido: {{ order_number }}</p>
+        
+        {% comment %} <p>Valor: {{ total_value }}</p> Valor Passado por contexto na view mas que pode ser alterado no inspecionar na pagina de checkout {% endcomment %}
+
+        <p>Valor: R${{ total_price }}</p> {% comment %} Resposta da API (Preço total do Pedido) {% endcomment %}    
+        
+        <p>Aguardando pagamento. Seu pedido ja está em espera.</p>
+        <a href="{% url 'home' %}" class="btn btn-primary" >Voltar ao Menu Inicial</a>
+    </div>
+    
+</div>
+{% endblock %}

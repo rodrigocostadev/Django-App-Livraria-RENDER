@@ -1,0 +1,708 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="col-md-12 offset-md-3 mx-auto "  >
+    <h2 class="text-center" >Finalizar Compra</h2>
+    <hr>
+    {% comment %} <br> {% endcomment %}
+
+    <form class="d-flex gap-3" action="{% url 'finish_purchase' %}" method="POST">
+        {% csrf_token %}
+        <div class="col-md-6 offset-md-3 mx-auto ">
+            {% comment %} style="background-color:#d3d3d3" {% endcomment %}
+            {% comment %} style="border:solid 2px #d3d3d3" {% endcomment %}
+            <div class="d-flex flex-column p-2 rounded" style="border:solid 2px #d3d3d3">
+                <h5>Endereço de Entrega</h5>
+                {% comment %} <span class="fs-6">(Edite para enviar a outro endereço)</span> {% endcomment %}
+                <hr style="width:98%;">
+    
+                {% comment %} <p><label>Usuario:</label>{{ userForm.username }}</p>     {% endcomment %}
+                <div class="d-flex gap-3" >
+                    <div style="width:50%;">
+                        <label>Estado:</label>
+                        <p> {{checkoutForm.state}}</p>   
+                    </div>
+                    <div style="width:50%;">
+                        <label>Cidade:</label>
+                        <p> {{checkoutForm.city}}</p>   
+                    </div>                   
+                </div>
+                <div class="d-flex gap-3">
+                    <div style="width:50%;">
+                        <label>Bairro:</label>
+                        <p> {{checkoutForm.district}}</p> 
+                    </div>
+                    <div style="width:50%;">
+                        <label>Número:</label>
+                        <p> {{checkoutForm.house_number}}</p> 
+                    </div>                     
+                                         
+                </div>
+                <div class="d-flex gap-3">
+                    <div style="width:50%;">
+                        <label>Rua:</label>
+                        <p>{{checkoutForm.street}}</p>  
+                    </div>   
+                    <div style="width:50%;">
+                        <label>Cep:</label>
+                        <p>{{checkoutForm.cep}}</p>  
+                    </div>  
+                </div>      
+                
+                {% comment %} Usuário: {% endcomment %}
+                <input type="hidden" id="user_id" value="{{ profile.user.id }}">
+                <input type="hidden" id="username" value="{{ profile.user }}">
+                <input type="hidden" id="first_name" value="{{ profile.user.first_name }}">
+                <input type="hidden" id="last_name" value="{{ profile.user.last_name }}">
+                <input type="hidden" id="email" value="{{profile.user.email}}">
+                {% comment %} Endereço {% endcomment %}
+                <input type="hidden" id="state"  value="{{profile.user.userprofile.state}}">
+                <input type="hidden" id="city" value="{{profile.user.userprofile.city}}">
+                <input type="hidden" id="district" value="{{profile.user.userprofile.district}}">
+                <input type="hidden" id="street" value="{{profile.user.userprofile.street}}">
+                <input type="hidden" id="house_number" value="{{profile.user.userprofile.house_number}}">                        
+                <input type="hidden" id="cep" value="{{profile.user.userprofile.cep}}">  
+
+                {% comment %} Pega o número do pedido criado pela função numberRandomOrder para passar para a view {% endcomment %}
+                <input type="hidden" id="hiddenOrderNumber" name="hidden_order_number">
+                
+                <hr style="width:98%;">
+                <p><label class="fw-bold"> <i class="fa-solid fa-truck"></i> Prazo de Entrega:</label> {{prazo_entrega}} </p>   
+            </div>
+            <br>
+    
+            <div class=" p-2 rounded" style="border:solid 2px #d3d3d3" >
+                <h5>Pagamento</h5>
+                <hr style="width:98%;">                
+    
+                <h6>Como deseja pagar?</h6>
+                <br>
+
+                <div class="d-flex flex-column gap-3">
+                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
+                        <input id="pix"  type="radio" name="payment" value="pix" style="cursor:pointer;"><i class="fa-brands fa-pix"></i>Pix
+                    </label>
+                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
+                        <input id="boleto"  type="radio" name="payment" value="boleto" style="cursor:pointer;"><i class="fa-solid fa-barcode"></i> Boleto
+                    </label>
+                    <label class="d-flex align-items-center gap-3 p-2 rounded" style="background-color:#d3d3d3; cursor:pointer;">
+                        <input id="cartao"  type="radio" name="payment" value="cartao" style="cursor:pointer;"><i class="fa-solid fa-credit-card"></i> Cartão de Crédito
+                    </label> 
+                    
+                    <div id="credit-card-data" class="d-none flex-column" >
+                        <label >Nome do Titular do Cartão</label>
+                        <input id="name_credit_card" class="form-control" name="name_credit_card" type="text">
+                        {% comment %} <p>{{ checkoutForm.name_card }}</p> {% endcomment %}
+
+                        <label >Número do Cartão ( 16 Dígitos )</label>
+                        <input id="number_credit_card" class="form-control" name="number_credit_card" type="number" >
+                        {% comment %} <p>{{ checkoutForm.number_card }}</p>                         {% endcomment %}
+
+                        <label >Código de Segurança ( 3 Dígitos )</label>
+                        <input id="security_code_credit_card" class="form-control" name="security_code_credit_card" type="number" >
+                        {% comment %} <p>{{ checkoutForm.code_security_card }}</p> {% endcomment %}
+                        
+                        <div class="d-flex gap-3">
+                            <div>
+                                <label name="month-credit-card">Validade (Mês)</label>
+                                <input id="validity_month_credit_card" class="form-control" name="validity_month_credit_card" type="number" placeholder="MM" >
+                                {% comment %} <p>{{ checkoutForm.validity_month_card }}</p> {% endcomment %}
+                            </div>
+                            
+                            <div>
+                                <label name="year-credit-card">Validade (Ano)</label>
+                                <input id="validity_year_credit_card" class="form-control" name="validity_month_credit_card" type="number" placeholder="AA" >
+                                {% comment %} <p>{{ checkoutForm.validity_year_card }}</p> {% endcomment %}
+                            </div>                            
+                        </div>
+                    </div>
+                    
+                </div>  
+            </div>
+        </div>
+        
+
+        <div class="col-md-6 offset-md-3 mx-auto p-2 rounded " style="border:solid 2px #d3d3d3">
+            <h4>Resumo do pedido</h4>
+            <hr style="width:98%;">
+            <br>
+
+            <div id="checkout-content" style="max-height:420px;overflow:auto;">
+                {% comment %} LISTA DE ITENS ADICIONADOS AO CARRINHO {% endcomment %}
+            </div>
+            
+            <div class="modal-footer">
+                <div class="d-flex justify-content-end gap-3" style="height:30px">
+                    <input id="promo_code" name="promo_code" class="form-control" type="text" placeholder="CUPOM DE DESCONTO" style="width:50%;" >
+                    <button type="button" onclick="addPromoCode()" class="btn btn-info btn-sm" >Aplicar Cupom</button>
+                </div>
+
+                {% comment %} <div> {% endcomment %}
+                <div id="used_promo_code" style="font-size:13px;width:100%;text-align:end" ></div>
+                {% comment %} </div> {% endcomment %}
+                
+                <div style="width:100%;" class=" d-flex justify-content-end align-items-center">
+                    <h6 style="display:inline-block; margin-right:5px;" >Valor Total: </h6><h6 style="display:inline-block" id="totalValueCheckout">R$ 0,00</h6>
+                </div>
+                <a href="{% url 'home' %}" onclick="clearCart()" class="btn btn-danger" data-bs-dismiss="modal">Cancelar</a>
+                <a href="{% url 'home' %}" class="btn btn-primary" >Continuar Comprando</a>
+                {% comment %} <a class="btn btn-success" >Finalizar Compra</a> {% endcomment %}
+                {% comment %} <button onclick="sendCartToBackend()" class="btn btn-success" type="submit" >Finalizar Compra</button> {% endcomment %}
+                <button id="sendCartToBackend" class="btn btn-success" type="submit" >Finalizar Compra</button>
+            </div>
+            
+            {% comment %} <button class="btn btn-success" type="submit" >Finalizar Compra</button> {% endcomment %}
+        </div> 
+    </form>
+    <br>
+
+    
+
+    <script>
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        ///////////////////////////  ENVIAR DADOS PARA O BACKEND JS  ///////////////////////////////
+
+        let userId = document.getElementById("user_id")
+        let userName = document.getElementById("username")
+        let firstName = document.getElementById("first_name")
+        let lastName = document.getElementById("last_name")
+        let email = document.getElementById("email")
+        let state = document.getElementById("state")
+        let city = document.getElementById("city")
+        let district = document.getElementById("district")
+        let street = document.getElementById("street")
+        let houseNumber = document.getElementById("house_number")
+        let cep = document.getElementById("cep")
+
+        let cardName = document.getElementById("name_credit_card")
+        let cardNumber = document.getElementById("number_credit_card")
+        let cardSecurityCode = document.getElementById("security_code_credit_card")
+        let cardValidityMonth = document.getElementById("validity_month_credit_card")
+        let cardValidityYear = document.getElementById("validity_year_credit_card")
+
+
+         // Variável para armazenar o método de pagamento selecionado
+         let selectedPaymentMethod = '';
+        
+         // Armazenar o método de pagamento quando o usuário clicar em um método de pagamento
+         document.getElementById('pix').addEventListener('click', function () {
+             selectedPaymentMethod = 'pix';
+             updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+         });
+     
+         document.getElementById('boleto').addEventListener('click', function () {
+             selectedPaymentMethod = 'boleto';
+             updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+         });
+     
+         document.getElementById('cartao').addEventListener('click', function () {
+             selectedPaymentMethod = 'cartao';
+             updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+         });
+     
+         // Função para atualizar o formulário com base na seleção de pagamento
+         function updatePaymentForm(paymentMethod) {
+             // Esconde ou mostra o formulário de cartão de crédito
+             const creditCardData = document.getElementById('credit-card-data');
+             if (paymentMethod === 'cartao') {
+                 creditCardData.classList.remove('d-none');
+             } else {
+                 creditCardData.classList.add('d-none');
+             }
+         }
+     
+         // Evento para o botão de "Finalizar Compra"
+         document.getElementById('sendCartToBackend').addEventListener('click', function () {
+             if (selectedPaymentMethod) {
+                 console.log("Clicou");
+                 sendCartToBackend(selectedPaymentMethod);
+             } else {
+                // alert('Por favor, selecione um método de pagamento!');
+                console.log('Por favor, selecione um método de pagamento!');
+             }
+         });
+
+
+         let promoCode = null
+         let promoValue = null
+         
+         function addPromoCode(){
+
+            let totalValueCheckout = document.getElementById("totalValueCheckout")
+            let input_promo_code = document.getElementById("promo_code")
+            let used_promo_code = document.getElementById("used_promo_code")
+            console.log(totalValueCheckout.textContent)
+
+            codes = [{"GANHEI5":0.05},{"APP10":0.1},{"LIVRO15":0.15},]
+
+            for (item of codes){
+                let codeName = Object.keys(item)[0]
+                let codeValue = item[codeName]
+                // console.log(item)
+                // console.log(codeName)
+                // console.log(codeValue)
+
+                if (input_promo_code.value == codeName ){
+
+                    console.log("TESTE",codeValue)
+
+                    if(used_promo_code.textContent == ""){
+                        let valueValid = totalValueCheckout.textContent.replace("R$", "").trim()
+                        valueValid = parseFloat(valueValid.replace(",", "."))
+                        console.log("valueValid: ", valueValid)
+
+                        let newValue = valueValid - (valueValid * codeValue)
+                        totalValueCheckout.textContent = "R$" + newValue.toFixed(2).replace(".", ",")
+                        used_promo_code.innerHTML = `Cupom <strong>${codeName}</strong> Adicionado`
+                        input_promo_code.value = ""
+
+                        promoCode = codeName
+                        promoValue = codeValue
+                    }                   
+                    
+                }
+
+            }           
+            
+         }
+
+
+        // Essa função cria um numero aleatorio para colocar no campo do numero do pedido ( order_number )
+        function numberRandomOrder(min,max){
+            return Math.floor(Math.random() * (max - min + 1) + min)
+        }
+
+        let numberRandom = numberRandomOrder(100, 100000000000)
+        let inputHiddenOrderNumber = document.getElementById("hiddenOrderNumber")
+        inputHiddenOrderNumber.value = numberRandom
+        localStorage.setItem("NumberOrder", JSON.stringify(numberRandom)) // Salva o numero da ordem para poder consultar na api depois
+
+
+
+        // Função para enviar o carrinho para o backend
+        function sendCartToBackend(paymentMethod) {
+            console.log("Teste de click botão");
+            let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
+
+            const API_URL = "http://127.0.0.1:8080/api/v1/orders/"
+            // "http://127.0.0.1:8080/api/v1/orders/"
+            // "http://localhost:8080/api/v1/orders/" 
+    
+            if (loadSaveCart && loadSaveCart.length > 0) {
+                let cartData = loadSaveCart.map(item => ({
+                    title: item.title,
+                    quantity: item.quantity,
+                    valueUnitBook: item.valueUnitBook,
+                    // totalValue: item.totalValue
+                    totalValue: promoValue? item.totalValue - (item.totalValue * promoValue) : item.totalValue
+
+                }));          
+
+    
+                // Enviar os dados via Fetch API para o servidor
+                fetch(API_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRFToken': getCookie('csrftoken')  // Se você estiver usando CSRF tokens
+                    },
+                    body: JSON.stringify({ 
+                        order_number: numberRandom,
+                        user_id: userId.value,
+                        user_name: userName.value,
+                        first_name: firstName.value,
+                        last_name: lastName.value,   
+                        cart: cartData,         
+                        state: state.value,
+                        city: city.value,
+                        district: district.value,
+                        street: street.value,
+                        house_number: parseInt(houseNumber.value),
+                        cep: parseInt(cep.value),
+                        payment_method: paymentMethod,
+                        payment: "wait",
+                        card_name: cardName.value ? cardName.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_number: cardNumber.value ? cardNumber.value : null,// Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro
+                        card_validity_year: cardValidityYear.value ? cardValidityYear.value : null, // Se estiver vazio precisa passar null para a api receber a requisição sem erro                
+                        promo_code: promoCode ? promoCode : null,
+                     })
+
+                })
+                .then(response => {
+                    console.log(response); 
+                    return response.json()
+                })
+                .then(data => {
+                    console.log('Dados enviados com sucesso:', data);
+                    // Redireciona para a URL do pagamento após o envio do carrinho
+                    // window.location.href = url;
+                    setTimeout(() => {
+                        clearCart()
+                    }, 1000)
+                    
+                })
+                .catch(error => {
+                    console.error('Erro ao enviar os dados:', error);
+                });
+            }
+        }
+
+
+        
+        // Função para obter o CSRF token (se estiver usando Django ou algo similar)
+        function getCookie(name) {
+            let value = '; ' + document.cookie;
+            let parts = value.split('; ' + name + '=');
+            if (parts.length === 2) return parts.pop().split(';').shift();
+            return '';
+        }
+
+
+
+        ////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////////////////////////////////////////////////////////////////////////
+
+
+    </script>
+
+</div>
+{% endblock %}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+{% comment %} ///////////////////////////////////////////////////////////////////////////
+            ///////////   TESTE SALVA DADOS NO LS   ///////////////////////////////////
+
+            // Serve somente para verificar no localstorage os dados que estão sendo enviados para a api
+            let cartDataTeste = loadSaveCart.map(item => ({
+                title: item.title,
+                quantity: item.quantity,
+                valueUnitBook: item.valueUnitBook,
+                totalValue: item.totalValue
+
+            }));
+
+            let testeDadosCompra = {
+                order_number: numberRandom,
+                user_id: userId.value,
+                user_name: userName.value,
+                first_name: firstName.value,
+                last_name: lastName.value,   
+                cart: cartDataTeste,                         
+                state: state.value,
+                city: city.value,
+                district: district.value,
+                street: street.value,
+                house_number: parseInt(houseNumber.value),
+                cep: parseInt(cep.value),
+                payment_method: paymentMethod,
+                payment: "wait",
+                card_name: cardName.value ? cardName.value : null,
+                card_number: cardNumber.value ? cardNumber.value : null,
+                card_security_code: cardSecurityCode.value ? cardSecurityCode.value : null,
+                card_validity_month: cardValidityMonth.value ? cardValidityMonth.value : null,
+                card_validity_year: cardValidityYear.value ? cardValidityYear.value : null,
+                promo_code: promoCode ? promoCode : null,
+            }
+
+            let promo_code2 = promoCode
+            console.log("promo_code2: ",promo_code2)
+
+            localStorage.setItem("TesteDados", JSON.stringify(testeDadosCompra))
+
+            ///////////////////////////////////////////////////////////////////////////
+            /////////////////////////////////////////////////////////////////////////// {% endcomment %}
+
+
+
+
+
+
+
+{% comment %} // Determina a URL com base no método de pagamento
+                let url = '';
+                switch (paymentMethod) {
+                    case 'pix':
+                        url = document.getElementById('pix-url').getAttribute('data-url');
+                        break;
+                    case 'boleto':
+                        url = document.getElementById('boleto-url').getAttribute('data-url');
+                        break;
+                    case 'cartao':
+                        url = document.getElementById('cartao-url').getAttribute('data-url');
+                        break;
+                    default:
+                        console.error("Método de pagamento inválido");
+                        return;
+                }     {% endcomment %}
+
+
+
+
+
+
+{% comment %} //user_id: 1,
+//user_name: "Rodrigo Costa",
+//first_name: "Rodrigo",
+//last_name: "Costa",   
+//cart: cartData,     
+//book_title: "Django para Iniciantes",
+//book_price: 59.9,
+//book_quantity: 1,               
+//total_price: "59.90",                    
+//total_price: "59.90",
+//state: "SP",
+//city: "São Paulo",
+//district: "Centro",
+//street: "Rua Teste",
+//house_number: 100,
+//cep: 12345678,
+//payment_method: "Cartão",
+//card_name: "Rodrigo Costa",
+//card_number: 1234567812345678,
+//card_security_code: 123,
+//card_validity_month: 12,
+//card_validity_year: 2025, {% endcomment %}
+
+
+
+
+
+
+
+
+
+{% comment %} <script>
+        let divCreditCard = document.getElementById("credit-card-data")
+        function openCloseCreditCard(){
+            if(divCreditCard.classList.contains("d-none")){
+                divCreditCard.classList.remove("d-none")
+                divCreditCard.classList.add("d-flex")
+            }else {
+                divCreditCard.classList.remove("d-flex")
+                divCreditCard.classList.add("d-none")
+            }            
+        }
+        function closeCreditCard(){
+            divCreditCard.classList.remove("d-flex")
+            divCreditCard.classList.add("d-none")
+        }
+    </script>  {% endcomment %}
+
+
+
+
+
+
+
+
+
+{% comment %} TESTE {% endcomment %}
+    {% comment %} <script>
+        let userId = document.getElementById("user_id")
+        let userName = document.getElementById("username")
+        let firstName = document.getElementById("first_name")
+        let lastName = document.getElementById("last_name")
+        let email = document.getElementById("email")
+        let state = document.getElementById("state")
+        let city = document.getElementById("city")
+        let district = document.getElementById("district")
+        let street = document.getElementById("street")
+        let houseNumber = document.getElementById("house_number")
+        let cep = document.getElementById("cep")
+
+        console.log(userId.value)
+        console.log(userName.value)
+        console.log(firstName.value)
+        console.log(lastName.value)
+        console.log(email.value)
+        console.log(state.value)
+        console.log(city.value)
+        console.log(district.value)
+        console.log(street.value)
+        console.log(houseNumber.value)
+        console.log(cep.value)
+    </script> {% endcomment %}
+
+
+
+
+
+
+
+
+    {% comment %} <label>Validade (Mês/Ano)</label>
+    <div class="d-flex form-control">
+        <div><input class="rounded form-control" name="month-credit-card" type="number" placeholder="MMM"></div>
+        <div><input class="rounded form-control" name="year-credit-card" type="number" placeholder="AA"></div></div>
+    </div>  {% endcomment %}
+
+
+
+
+
+
+
+
+
+    {% comment %} ////////////////////////////////////////////////////////////////////////////////////////////
+        ////////////////////////  ENVIAR DADOS PARA O BACKEND COM JQUERY  ////////////////////////// {% endcomment %}
+
+        {% comment %} $(document).ready(function () {
+            // Variável para armazenar o método de pagamento selecionado
+            let selectedPaymentMethod = '';
+        
+            // Armazenar o método de pagamento quando o usuário clicar em um método de pagamento
+            $('#pix').click(function () {
+                selectedPaymentMethod = 'pix';
+                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+            });
+        
+            $('#boleto').click(function () {
+                selectedPaymentMethod = 'boleto';
+                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+            });
+        
+            $('#cartao').click(function () {
+                selectedPaymentMethod = 'cartao';
+                updatePaymentForm(selectedPaymentMethod);  // Atualiza o formulário com base na seleção
+            });
+        
+            // Função para atualizar o formulário com base na seleção de pagamento
+            function updatePaymentForm(paymentMethod) {
+                // Esconde ou mostra o formulário de cartão de crédito
+                if (paymentMethod === 'cartao') {
+                    $('#credit-card-data').removeClass('d-none');
+                } else {
+                    $('#credit-card-data').addClass('d-none');
+                }
+            }
+        
+            // Evento para o botão de "Finalizar Compra"
+            $('#finalizar-compra').click(function () {
+                if (selectedPaymentMethod) {
+                    console.log("Clicou")
+                    sendCartToBackend(selectedPaymentMethod);
+                } else {
+                    alert('Por favor, selecione um método de pagamento!');
+                }
+            });
+        
+            // Função para enviar o carrinho para o backend
+            function sendCartToBackend(paymentMethod) {
+                console.log("Teste de click botão")
+                let loadSaveCart = JSON.parse(localStorage.getItem("saveCart"));
+        
+                if (loadSaveCart && loadSaveCart.length > 0) {
+                    let cartData = loadSaveCart.map(item => ({
+                        title: item.title,
+                        quantity: item.quantity,
+                        valueUnitBook: item.valueUnitBook,
+                        totalValue: item.totalValue
+                    }));
+        
+                    // Determina a URL com base no método de pagamento
+                    let url = '';
+                    switch (paymentMethod) {
+                        case 'pix':
+                            url = $('#pix-url').data('url');
+                            break;
+                        case 'boleto':
+                            url = $('#boleto-url').data('url');
+                            break;
+                        case 'cartao':
+                            url = $('#cartao-url').data('url');
+                            break;
+                        default:
+                            console.error("Método de pagamento inválido");
+                            return;
+                    }
+        
+                    // Enviar os dados via AJAX para o servidor
+                    $.ajax({
+                        type: 'POST',
+                        url: url, // URL dinâmica baseada no pagamento
+                        contentType: 'application/json',
+                        headers: {
+                            'X-CSRFToken': getCookie('csrftoken') // Se você estiver usando CSRF tokens
+                        },
+                        data: JSON.stringify({ cart: cartData }), // Corpo da requisição
+                        success: function (response) {
+                            console.log('Dados enviados com sucesso:', response);
+                            // Redireciona para a URL do pagamento após o envio do carrinho
+                            window.location.href = url;
+                        },
+                        error: function (error) {
+                            console.error('Erro ao enviar os dados:', error);
+                        }
+                    });
+                }
+            }
+        });
+
+        function getCookie(name) {
+            let cookieValue = null;
+            if (document.cookie && document.cookie !== '') {
+                let cookies = document.cookie.split(';');
+                for (let i = 0; i < cookies.length; i++) {
+                    let cookie = cookies[i].trim();
+                    if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                    }
+                }
+            }
+            return cookieValue;
+        } {% endcomment %}
+
+        {% comment %} ////////////////////////////////////////////////////////////////////////////////////////////
+        //////////////////////////////////////////////////////////////////////////////////////////// {% endcomment %}
+
+
+
+        {% comment %} function selectPaymentMethod(method) {
+            // Esconde ou mostra o formulário de cartão de crédito
+            if (method === 'cartao') {
+                document.getElementById('credit-card-data').classList.remove('d-none');
+            } else {
+                document.getElementById('credit-card-data').classList.add('d-none');
+            }
+
+            // Redireciona para a URL correspondente
+            switch (method) {
+                case 'pix':
+                    window.location.href = '/pix_payment/';
+                    break;
+                case 'boleto':
+                    window.location.href = '/boleto_payment/';
+                    break;
+                case 'cartao':
+                    window.location.href = '/card_payment/';
+                    break;
+                default:
+                    console.log('Método de pagamento desconhecido');
+                    break;
+            }
+        } {% endcomment %}

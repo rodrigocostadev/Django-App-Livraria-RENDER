@@ -1,0 +1,31 @@
+
+{% comment %} <button class="btn btn-primary" type="button" data-bs-toggle="offcanvas" data-bs-target="#offcanvasTop" aria-controls="offcanvasTop">Toggle top offcanvas</button> {% endcomment %}
+
+<div class="offcanvas offcanvas-end bg-dark text-white" tabindex="-1" id="offcanvasRight" aria-labelledby="offcanvasRightLabel">
+  <div class="offcanvas-header">
+    <h5 id="offcanvasRightLabel">Notificações</h5>
+    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+  </div>
+  <div class="offcanvas-body">
+    {% if friend_requests %}    
+        <h6 class="text-center">Solicitações de Amizade:</h6>
+        {% for request in friend_requests %}                            
+            <div class="d-flex justify-content-center align-items-center gap-3 btn btn-primary mx-auto mb-2"style="width:95%">
+                {% comment %} <img src="{{ request.from_user.profile.user_image.url }}" width="50" height="50"> {% endcomment %}
+                <a href="{% url 'profile_view' request.from_user.id %}">
+                    <img src="{{ request.from_user_image.url }}" width="50" height="50" style="border-radius:50%;">
+                </a>                                
+                <p class="m-0" style="width:280px">{{ request.from_user.username }} deseja seguir você</p>
+                <form method="POST" action="{% url 'accept_friend_request' request.id %}" >
+                    {% csrf_token %}
+                    <button type="submit" name="accept_request" class="btn btn-success"><i class="fa-solid fa-check"></i></button>
+                </form>
+                <form method="POST" action="{% url 'reject_friend_request' request.id %}" >
+                    {% csrf_token %}
+                    <button type="submit" name="reject_request" class="btn btn-danger"><i class="fa-solid fa-x"></i></button>
+                </form>
+            </div>                            
+        {% endfor %}
+    {% endif %}  
+  </div>
+</div>

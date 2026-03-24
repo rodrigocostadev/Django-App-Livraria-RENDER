@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% load qr_code %}
+
+{% block content %}
+<div class="col-md-12 offset-md-3 mx-auto text-center "  >
+    <h2 class="text-center" >Forma de Pagamento - Pix</h2>
+    <hr>
+    <div class="col-md-6 offset-md-3 mx-auto ">
+        {% comment %} <img src="{% static '/images/QR_code_for_mobile_English_Wikipedia.svg.png' %}" class="w-75 mx-auto"> {% endcomment %}
+
+        {% qr_from_text order_number  size="L" %}
+
+        <p>Aguardando pagamento. Seu pedido ja está em espera.</p>
+
+        {% comment %} Teste (passa o numero da ordem diretamente pelo JS): não esta funcionando {% endcomment %}
+        {% comment %} <p id="order" ></p>  {% endcomment %}
+
+        <p>Número do Pedido: {{ order_number }}</p>
+        
+        {% comment %} <p>Valor: {{ total_value }}</p> Valor Passado por contexto na view mas que pode ser alterado no inspecionar na pagina de checkout {% endcomment %}
+
+        <p>Valor: R${{ total_price }}</p> {% comment %} Resposta da API (Preço total do Pedido) {% endcomment %}        
+        
+        
+        
+        <a href="{% url 'home' %}" class="btn btn-primary" >Voltar ao Menu Inicial</a>
+
+        {% comment %} TESTE Envia o formulário ao carregar a pagina {% endcomment %}
+        {% comment %} <form id="autoSubmitForm" method="GET" >
+            {% csrf_token %}
+            <input type="hidden" id="inputHiddenOrder" name="order_number">
+        </form>  {% endcomment %}
+
+        
+        
+
+    </div>
+
+    {% comment %} <script>
+
+        //let order = localStorage.getItem("NumberOrder")
+        //console.log("Esse é o numberOrder: ",order)
+
+        //let pElementOrder = document.getElementById("order")  
+        //pElementOrder.textContent = "Número do pedido: " + order    // Mostra ao usuário o numero da ordem 
+
+
+        // Envia o formulário ao carregar a pagina
+        window.onload = function(){
+            console.log("Pagina PIX")
+
+            let order = localStorage.getItem("NumberOrder")
+            console.log("Esse é o numberOrder: ",order)
+
+            let inputHidden = document.getElementById("inputHiddenOrder")
+            let pElementOrder = document.getElementById("order")     
+            inputHidden.value = order   // teste para pegar o valor diretamente para o django
+            pElementOrder.textContent = "Número do pedido: " + order    // Mostra ao usuário o numero da ordem
+            
+            let form = document.getElementById("autoSubmitForm")
+            form.action = `http://localhost:8080/api/v1/order/total-price/${order}/`
+            form.submit()
+            
+        } 
+                                             
+    </script> {% endcomment %}
+    
+</div>
+{% endblock %}

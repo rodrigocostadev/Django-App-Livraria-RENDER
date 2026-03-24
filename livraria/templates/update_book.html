@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="col-md-6 offset-md-3" >
+    <h2 class="text-center" >Atualizar Livro</h2>
+    <hr>
+    <form class="mb-5" method="POST" >
+        {% csrf_token %}
+
+        {{form.as_p}}   
+
+        {% comment %} {{ form.title }}
+        {{ form.description }}
+
+        <datalist id="year_choices">
+            {% for year in year_choices %}
+                <option value="{{ year }}">{{ year }}</option>
+            {% endfor %}
+        </datalist>
+
+        {{ form.genre }}
+        {{ form.value }}
+        {{ form.stock }}
+        {{ form.image }} {% endcomment %}
+
+
+        <br/>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{% url 'home'  %}" class="btn btn-secondary" >Voltar</a>
+            <button type="submit" class="btn btn-success" >Atualizar</button>
+        </div>
+        
+    </form>
+
+
+</div>
+
+{% endblock %}
+
+
+
+
+
+
+
+
+
+        {% comment %} {{ form.title }}
+        {{ form.description }}
+
+        <p class="form-group">
+            <label for="id_year">Ano do Livro</label>
+            <input type="text" list="year_choices" name="year" id="id_year" class="form-control" placeholder="teste" >
+                <datalist id="year_choices">
+                    {% for year in year_choices %}
+                        <option value="{{ year }}"></option>
+                    {% endfor %}
+                </datalist>                
+        </p>
+
+        {{ form.genre }}
+        {{ form.value }}
+        {{ form.stock }}
+        {{ form.image }} {% endcomment %}
+
+
+
+    {% comment %} TESTE {% endcomment %}
+    {% comment %} <input type="text" list="year_choices" >
+        <datalist id="year_choices">
+            {% for year in year_choices %}
+              <option value={{year}} ></option>
+            {% endfor %}
+        </datalist> {% endcomment %}

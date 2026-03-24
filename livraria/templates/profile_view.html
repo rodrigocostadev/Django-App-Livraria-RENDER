@@ -1,0 +1,468 @@
+{% extends 'base.html' %}
+
+{% load static %}
+
+{% block content %}
+<div class="col-md-10 offset-md-3 mx-auto" >
+    <h2 class="text-center" >Perfil</h2>
+    <hr>
+    <br>
+
+    {% if user.is_authenticated and user_profile %}
+        <div class="d-flex flex-column gap-3">
+            
+            <div class="text-center">
+                
+                {% if user.userprofile.user_image %}
+                    <img style="border-radius:50%;max-width:200px;" src="{{user_profile.userprofile.user_image.url}}">                
+                {% endif %}
+                {% if not user.userprofile.user_image.url %}
+                    <img src="{% static 'images/default.jpg' %}" style="width:205px; height:205px; border-radius: 50%; margin-left:10px" alt="s/ foto">
+                {% endif %}
+                <h6>{{ user_profile.username }}</h6>
+
+
+
+                
+                {% if user_profile != user_logged %}     
+
+                    {% if is_follower %}
+                        <div class="d-flex justify-content-center align-items-center gap-3" >
+                            <span class="btn btn-info mt-1 mb-3" onclick="openCloseRemoveFollower()">Segue Você <i class="fa-solid fa-user-check"></i></span>
+                            <span id="div-remove-follower" class="d-none mb-3" >
+                                <form method="POST" action="{% url 'profile_view' user_profile.id %}" >
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger mt-1 " name="remove_follower" >Remover Seguidor <i class="fa-solid fa-user-xmark"></i></button>
+                                </form>
+                            </span>   
+                        </div>
+                                             
+
+                        <script>
+                            let divRemovefollower = document.getElementById("div-remove-follower")
+                            function openCloseRemoveFollower(){
+                                if (divRemovefollower.classList.contains("d-none")){
+                                    divRemovefollower.classList.remove("d-none")
+                                    divRemovefollower.classList.add("d-block")
+                                }else{
+                                    divRemovefollower.classList.add("d-none")
+                                    divRemovefollower.classList.remove("d-block")
+                                }
+                            }
+                        </script>
+                                            
+                    {% endif %}     
+                    
+                    {% comment %} {% if not is_following_filter %}
+                        <form class="mb-3" method="POST" action="{% url 'profile_view' user_profile.id %}">
+                            {% csrf_token %}
+                            <button id="addFriend" name="friend_request"
+                            type="submit" class="btn btn-primary btn-small mt-1">Seguir <i class="fa-solid fa-user-plus" style="margin-left:10px;"></i></button>
+                        </form>    
+                    {% else %}
+                        {% if friend_request_solicitation  %}
+                            <p class="btn btn-success mb-3 mt-1" style="cursor:default;" >Solicitação Enviada</p>   
+                        {% endif %}   
+                    {% endif %}    {% endcomment %}
+
+
+                    {% if friend_request_solicitation  %}
+                            <p class="btn btn-success mb-3 mt-1" style="cursor:default;" >Solicitação Enviada <i class="fa-solid fa-check"></i></p>  
+                    {% elif is_following_filter %}
+                        <div class="d-flex align-items-center justify-content-center gap-3">
+                            <span class="btn btn-success mb-3 mt-1" onclick="openCloseUnfollower()" style="cursor:pointer;" >Seguindo <i class="fa-solid fa-user-check"></i></span> 
+                            <span id="div-unfollow" class="d-none mb-3" >
+                                <form method="POST" action="{% url 'profile_view' user_profile.id %}" >
+                                    {% csrf_token %}
+                                    <button type="submit" class="btn btn-danger mt-1 " name="unfollow" >Deixar de Seguir <i class="fa-solid fa-user-xmark"></i></button>
+                                </form>
+                            </span>  
+                        </div>
+                         
+
+                            <script>
+                                let divUnfollower = document.getElementById("div-unfollow")
+                                function openCloseUnfollower(){
+                                    if (divUnfollower.classList.contains("d-none")){
+                                        divUnfollower.classList.remove("d-none")
+                                        divUnfollower.classList.add("d-block")
+                                    }else{
+                                        divUnfollower.classList.add("d-none")
+                                        divUnfollower.classList.remove("d-block")
+                                    }
+                                }
+                            </script>
+
+                    {% else %}
+                        <form class="mb-3" method="POST" action="{% url 'profile_view' user_profile.id %}">
+                            {% csrf_token %}
+                            <button id="addFriend" name="friend_request"
+                            type="submit" class="btn btn-primary btn-small mt-1">Seguir <i class="fa-solid fa-user-plus" style="margin-left:10px;"></i></button>
+                        </form>  
+                    {% endif %}   
+                    
+                {% endif %}
+                
+                {% comment %} {% else %}
+                    {% if friend_requests %}    
+                        <div>Solicitações de amizade:</div>
+                        {% for request in friend_requests %}                            
+                            <div class="d-flex justify-content-center align-items-center gap-3 btn btn-primary mx-auto mb-2"style="width:60%">
+                                
+                                <a href="{% url 'profile_view' request.from_user.id %}">
+                                    <img src="{{ request.from_user_image.url }}" width="50" height="50" style="border-radius:50%;">
+                                </a>                                
+                                <p class="m-0" style="width:280px">{{ request.from_user.username }} deseja seguir você</p>
+                                <form method="POST" action="{% url 'accept_friend_request' request.id %}" >
+                                    {% csrf_token %}
+                                    <button type="submit" name="accept_request" class="btn btn-success"><i class="fa-solid fa-check"></i></button>
+                                </form>
+                                <form method="POST" action="{% url 'reject_friend_request' request.id %}" >
+                                    {% csrf_token %}
+                                    <button type="submit" name="reject_request" class="btn btn-danger"><i class="fa-solid fa-x"></i></button>
+                                </form>
+                            </div>                            
+                        {% endfor %}
+                    {% endif %}  
+                                
+                {% endif %} {% endcomment %}
+
+
+
+
+
+                {% comment %} <img src="{{ request.from_user.profile.user_image.url }}" width="50" height="50"> {% endcomment %}
+
+
+
+                
+
+
+                  
+
+
+
+
+
+            {% comment %} <br> {% endcomment %}
+
+            
+            {% comment %} {% for profile in is_following %} {% endcomment %}
+            {% comment %} <p>{{ user_profile.userprofile.followers.user_image.url }}</p>
+            <img src="{{ user_profile.userprofile.followers.user_image.url }}" style="width:40px;height:40px;border-radius:50%"> {% endcomment %}
+
+            
+            
+            {% comment %} {% for profile in is_following %}
+                <p>{{ profile }}</p>
+                <p>{{ profile.user.username }}</p>
+                <p>URL da imagem: {{ profile.user_image.url }}</p>
+                <a href="{% url 'profile_view' profile.user.id %}" >
+                    <img src="{{ profile.user_image.url }}" style="width:40px;height:40px;border-radius:50%">
+                </a>                
+            {% empty %}
+            {% endfor %} {% endcomment %}
+
+            {% comment %} <p>{{is_following }}</p> {% endcomment %}
+
+           
+            {% comment %} <p>{{ is_following_filter }} TESTE </p> {% endcomment %}
+            
+            {% if is_following_filter or user_profile == user_logged %}
+            {% comment %} {% if user_logged in is_following_filter or user_profile == user_logged %} {% endcomment %}
+
+                {% if user_profile_instance.bio %}
+                    <div class="d-flex gap-3" >
+                        <h6>Bio:</h6>
+                        <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile_instance.bio }}</textarea>
+                    </div>                
+                {% endif %} 
+
+                {% comment %} {% if user_profile.bio %}
+                    <div class="d-flex gap-3" >
+                        <h6>Bio:</h6>
+                        <textarea class="form-control text-center" style="height:120px;" readonly> {{ user_profile.bio }}</textarea>
+                    </div>                
+                {% endif %} {% endcomment %}
+
+            
+
+                <div class="text-center" >
+
+                    {% comment %} <br> {% endcomment %}
+                    <br>
+                    <h5>Gêneros Preferidos:</h5>              
+                    <div class="d-flex justify-content-center gap-2" >
+                            {% for genre in unique_genres %}
+                                <a href="{% url 'tag_search' %}?search={{ genre }}" style="color:black;">
+                                    <div class="card p-1" style="display: inline-block; margin-left:10px" 
+                                    onmouseover="this.style.backgroundColor='#d3d3d3';" onmouseout="this.style.backgroundColor='';"
+                                    >{{ genre }}</div>
+                                </a>
+                            {% empty %}
+                                <p >Este usuário ainda não fez avaliações.</p>                    
+                            {% endfor %}
+                    </div>
+                    <br>
+
+
+                    {% comment %} <h5>TESTE DE TAG USANDO DJANGO TAGGIT:</h5>   
+                    <br>  
+                    <div class="d-flex justify-content-center gap-2">
+                        {% for rating in ratings %}
+                            {% with book=rating.book %}
+                                <div>
+                                    <h6>{{ book.title }}</h6>
+                                    
+                                    <h6>Tags:</h6>
+                                    <div class="d-flex flex-wrap">
+                                        {% for tag in book.tags.all %}
+                                            <a href="{% url 'tag_search' %}?search={{ tag.name }}">
+                                                <div class="card p-1" style="display: inline-block; margin-left:10px;color:black; ">
+                                                    {{ tag.name }}
+                                                </div>
+                                            </a>
+                                            
+                                        {% empty %}
+                                            <p>Este livro não tem tags associadas.</p>
+                                        {% endfor %}
+                                    </div>
+                                </div>
+                            {% endwith %}
+                        {% empty %}
+                            <p>Este usuário ainda não fez avaliações.</p>
+                        {% endfor %}
+                    </div> {% endcomment %}
+
+                    
+
+                    <br>
+                    <h5>Livros Preferidos:</h5>                
+
+                    <div class="d-flex justify-content-center" >
+
+                        {% comment %} {% for item in last_ratings_list %}
+                        <div>{{ item.rating }}</div>
+                            {% if item.rating >= 4 %}
+                                <a href="{% url 'book' item.book.id %}">
+                                    <img src="{{ rating.book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ rating.book.title }}">
+                                </a>
+                            {% endif %}
+                        {% endfor %} {% endcomment %}
+                        {% comment %} <div>TESTE{{ rating.rating }}</div> {% endcomment %}
+
+
+                            {% for rating in ratings %}
+                                {% for book in books %}
+                                    {% if rating.book.title == book.title %}
+                                        <div>                                        
+                                            <a href="{% url 'book' book.id %}">
+                                                <img src="{{ book.image.url }}" class="w-75" style="max-height:200px;object-fit:contain;"  alt="{{ book.title }}">
+                                            </a>
+                                        </div>                                
+                                    {% endif %} 
+                                {% endfor %}
+
+                            {% empty %}
+                                <p>Este usuário ainda não fez avaliações.</p>                    
+                            {% endfor %} 
+                    </div>
+                    {% comment %} <img src="{{ book.image.url }} " class="w-25"  alt="{{ book.title }}"> {% endcomment %}
+                    
+
+
+                    {% comment %} <h5>Gêneros Preferidos:</h5>
+
+                    <div class="d-flex justify-content-center gap-2" >
+                            {% for rating in unique_genres %}
+                                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ rating}}</div>
+                            {% empty %}
+                                <p >Este usuário ainda não fez avaliações.</p>
+                        
+                            {% endfor %}
+                    </div> {% endcomment %}
+
+                    <br>
+                    <h6>Seguidores:<h6>
+                    <div class="d-flex justify-content-center gap-3" >
+                        {% for follower in user_profile.userprofile.followers.all %}                            
+                            <span>
+                                {% comment %} <p>{{ follower.user.username }}</p> {% endcomment %}
+                                <a href="{% url 'profile_view' follower.user.id  %}" >
+                                    <img src="{{ follower.user.userprofile.user_image.url }}" style="width:40px;height:40px;border-radius:50%">
+                                </a>     
+                            </span>
+                        {% empty %}
+                        <p>-----</p>
+                        {% endfor %}
+                    </div>
+
+
+                    <h6>Seguindo:<h6>
+                    {% comment %} <p>{{ user_profile.userprofile.followings.all }} TESTE </p> {% endcomment %}
+                    <div class="d-flex justify-content-center gap-3" >
+                        {% for following in is_following %}                            
+                            <span>
+                                {% comment %} <p>{{ following.user.username }}</p> {% endcomment %}
+                                <a href="{% url 'profile_view' following.user.id  %}" >
+                                    <img src="{{ following.user.userprofile.user_image.url }}" style="width:40px;height:40px;border-radius:50%">
+                                </a>     
+                            </span>
+                        {% empty %}
+                        <p>-----</p>
+                        {% endfor %}
+                    </div>
+
+                </div>
+            {% endif %}
+            <br>
+
+            {% if user_profile == user_logged %}
+            <hr>          
+
+            <div class="col-md-12 offset-md-3 d-flex  gap-3 mx-auto " >
+                <div class="col-md-6 offset-md-3 d-flex flex-column gap-3 mx-auto " >
+                    <h4>Dados Pessoais:</h4>
+                    <div>
+                        <input type="text" class="form-control" value="Usuário: {{user_profile.username}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Nome: {{user_profile.first_name}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Sobrenome: {{user_profile.last_name}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Email: {{user_profile.email}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Cpf: {{user_profile.userprofile.cpf}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Imagem de Perfil: {{user_profile.userprofile.user_image}}" readonly>
+                    </div>
+                </div>
+
+                <div class="col-md-6 offset-md-3 d-flex flex-column gap-3 mx-auto " >
+                    <h4>Endereço:</h4>
+                    <div>
+                        <input type="text" class="form-control" value="Estado: {{user_profile.userprofile.state}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Cidade: {{user_profile.userprofile.city}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Bairro: {{user_profile.userprofile.district}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Rua: {{user_profile.userprofile.street}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Número da Casa: {{user_profile.userprofile.house_number}}" readonly>
+                    </div>
+                    <div>
+                        <input type="text" class="form-control" value="Cep: {{user_profile.userprofile.cep}}" readonly>
+                    </div>
+                </div>          
+            </div>
+            <br>
+            <div class="d-flex justify-content-center ">
+                <a href="{% url 'profile_edit' %}">
+                    <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
+                </a>                
+            </div>             
+
+            {% endif %}
+        </div>
+
+    {% endif %}
+
+</div>
+<br>
+
+{% endblock %}
+
+
+
+
+
+
+
+            {% comment %} <h4>Dados Pessoais:</h4>
+            <div>
+                <input type="text" class="form-control" value="Usuário: {{user_profile.username}}" readonly>
+            </div>
+            <div>
+                <input type="text" class="form-control" value="Nome: {{user_profile.first_name}}" readonly>
+            </div>
+            <div>
+                <input type="text" class="form-control" value="Sobrenome: {{user_profile.last_name}}" readonly>
+            </div>
+            <div>
+                <input type="text" class="form-control" value="Email: {{user_profile.email}}" readonly>
+            </div>
+            <div>
+                <input type="text" class="form-control" value="Cpf: {{user_profile.userprofile.cpf}}" readonly>
+            </div>
+            <div>
+                <input type="text" class="form-control" value="Imagem de Perfil: {{user_profile.userprofile.user_image}}" readonly>
+            </div>
+            <div class="d-flex justify-content-center ">
+                <a href="{% url 'profile_edit' %}">
+                    <button type="button" class="btn btn-primary btn-lg" >Editar Perfil</button>
+                </a>                
+            </div>  {% endcomment %}
+
+
+
+
+
+
+
+
+
+
+   
+
+    {% comment %} <div class="d-flex mt-5">
+        
+    </div> {% endcomment %}
+
+
+    {% comment %} <p>{{user.}}</p>
+    <p>{{user.}}</p>
+    <p>{{user.}}</p>
+    <p>{{user.}}</p>
+    <p>{{user.}}</p> {% endcomment %}
+
+
+    {% comment %} <form method="POST" >
+        {% csrf_token %}
+
+        {{form.as_p}}   
+
+        <br/>
+        <a href="{% url 'home'  %}" class="btn btn-secondary" >Voltar</a>
+        <button type="submit" class="btn btn-success" >Atualizar</button>
+    </form> {% endcomment %}
+
+
+
+    {% comment %} <div class="d-flex justify-content-center gap-2" > {% endcomment %}
+        {% comment %} {% for rating in ratings %}
+            {% for tag in book.tags.all %}
+                {% if rating.book == tag.name %}
+                    <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
+                {% empty %}
+                    <p >Este usuário ainda não fez avaliações.</p>     
+                {% endif %}               
+            {% endfor %}
+        {% endfor %} {% endcomment %}
+
+            {% comment %} {% for tag in book.tags.all %}
+                <div class="card p-1" style="display: inline-block; margin-left:10px">{{ tag.name }}</div>
+            {% empty %}
+                <p >Este usuário ainda não fez avaliações.</p>                    
+            {% endfor %} {% endcomment %}
+    {% comment %} </div>
+    <br> {% endcomment %}

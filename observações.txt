@@ -1,0 +1,52 @@
+/// ADMIN ///
+User: rodrigo.costa
+User: rodrigo.costaADM
+Password: senhafacil
+
+
+# (django taggit foi instalado com o comando):
+
+pip install django-taggit
+
+ou
+
+python -m pip install django-taggit
+
+
+# Cupons de desconto: "GANHEI5" 5% de Desc,"APP10" 10% de Desc,"LIVRO15" 15% de Desc
+# Ao querer mudar um cupom de desconto, mudar no front end (projeto app livraria) na pagina de checkout na variavel codes, e na API (api django app livraria) no arquivo views na variavel codes
+
+
+
+# Rodar a api de pagamento na porta 8080 com o comando =    python manage.py runserver 8080
+
+
+Próximas implementações:
+- ( OK ) Implementar Qr code generator na pagina de pix (utilizando o number order "Número do pedido")  
+- Implementar Barcode generator na pagina de boleto (utilizando o number order "Número do pedido") - Codigo de barras do google fonts provisório
+- ( OK ) Implementar offcanvas lateral para notificações de solicitações de amizade
+
+- ( OK ) Implementar cards em vez de tabela na home para USUARIOS para apresentar os livros (Ocultar: genero, data disp venda, ultima atualização, estoque) 
+- ( OK ) também ocultar para o usuario para o item da navbar CADASTRO DE LIVRO. Para ADM ainda será tabela sem nehuma informação ocultada
+
+- ( OK ) Implementar na pagina de adição de livro a integração com o ChatGPT, para adicionar a DESCRIÇÃO e ANO
+
+- Implementar confirmação de pagamento, e alterando a propriedade do pedido "payment" que é wait por padrão e mudando para pago
+- Implementar se o pagamento for concluido, descontar o estoque do livro que foi comprado pela quantidade do mesmo livro do pedido
+
+
+
+
+Para tentar implementar o codigo de barras na pagina de boleto, foram feitas tentativas com as bibliotecas: pyBarcode, barcode, python-barcode e zxing. 
+Nenhuma consegui fazer funcionar até o momento, novas tentativas devem ser feitas.
+
+Pesquisar em:
+https://code.djangoproject.com/wiki/Barcodes
+https://stackoverflow.com/questions/6552878/generate-barcodes-in-django-site
+https://medium.com/@KaziMushfiq1234/django-barcode-generator-how-to-create-barcode-in-django-f011ca7af8ff
+
+https://fonts.google.com/?selection.family=Libre+Barcode+39+Extended+Text&query=barcode # Tentar diretamente com a fonte passando o texto para barcode
+
+Pesquisar videos:  django barcode no youtube
+
+

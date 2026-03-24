@@ -1,0 +1,81 @@
+
+{% load static %}
+
+ <!-- Modal add prod -->
+ <div id="myModal" class="modal fade" tabindex="-1" aria-labelledby="myModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-dialog-scrollable">
+        <div class="modal-content">
+        <div class="modal-header">
+            <h4 class="modal-title ml-5" id="myModalLabel"><i class="bi bi-cart"></i> Adicionar ao Carrinho</h4>
+            <button onclick="closeModal()" type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            
+        </div>
+        <div class="modal-body">
+            <div>
+                <h6 style="display:inline-block" >Itens Selecionados: </h6><span></span> <h6 id="quantityBookCartModalTitle" style="display:inline-block" ></h6>
+            </div>
+            
+                <div class="d-flex ">
+                    <img id="imgCartModal" class="w-25">
+                    <div class="text-center" style="width:100%;">
+                        <h6 class="mb-4" id="titleCartModal"></h6>
+                        <div class="d-flex align-items-center justify-content-center gap-4">
+                            <button class="btn btn-danger small-btn" data-bs-dismiss="modal">Excluir</button>
+                            <a class="p-2" onclick="decrease()" id="decrease" href="#">
+                                <i   class="fa-solid fa-minus"></i>
+                            </a>                            
+                            <span id="quantityBookCartModal" ></span>
+                            <a class="p-2" onclick="add()" id="add" style="margin-left:5px;" href="#">
+                                <i class="fa-solid fa-plus"></i>
+                            </a>
+                            <span id="valueCartModal" style="margin-left:30px;"></span>
+                        </div>                        
+                    </div>                  
+                </div>
+        </div>
+        <div class="modal-footer">
+            <button onclick="clearCart()" type="button" class="btn btn-danger" data-bs-dismiss="modal">Limpar</button>
+            {% if user.is_authenticated %}
+            <a href="{% url 'page_checkout' %}" onclick="addBookCart()" class="btn btn-success" >Finalizar Compra</a>
+            {% else %}
+            <a href="{% url 'login' %}" class="btn btn-success" >Finalizar Compra</a>
+            {% endif %}
+            {% comment %} <button  type="button" class="btn btn-success" data-bs-dismiss="modal">Finalizar Compra</button> {% endcomment %}
+            <button onclick="addBookCart()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Adicionar</button>            
+        </div>
+        </div>
+    </div>
+    </div>
+
+    <script src="{% static 'scripts/modalAddCart.js' %}"></script>
+
+
+
+
+
+
+
+
+{% comment %} <img style="width:30px;" scr="./media/images/codigo_limpo.webp"> {% endcomment %}
+
+                        {% comment %} <p>Imagem</p>
+                        <p>Wyckoff 2.0</p>
+                        <span>Excluir</span>
+                        <span>-</span>
+                        <span>1</span>
+                        <span>+</span> {% endcomment %} 
+
+
+
+
+                        {% comment %} {% for item in cart_items %}
+                    <div class="d-flex gap-5">                        
+
+                        <p>{{ item.book.image.url }}</p>
+                        <p>{{ item.book.title }}</p>
+                        <span>Excluir</span>
+                        <span>-</span>
+                        <span>{{ item.quantity}}</span>
+                        <span>+</span>
+                    </div>
+                    {% endfor %} {% endcomment %}
